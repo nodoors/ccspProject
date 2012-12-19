@@ -1,0 +1,376 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta charset="UTF-8">
+  <title>Creat My Own Trip</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/default.css"/>
+  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/edit_article.css"/>
+  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.css" >			
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery-ui.css" />
+  <link rel='stylesheet' href='/stylesheets/style.css' />	
+  <link rel='stylesheet' href='/stylesheets/bootstrap-responsive.min.css' />
+  <link rel='stylesheet' href='/stylesheets/index.css' />
+  <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/jquery.json-2.4.min.js"></script>
+  <script type="text/javascript" src="javascripts/jquery-ui.js"></script>           
+  <script type="text/javascript" src="javascripts/bootstrap.js"></script>
+  
+  <script>																						
+    $(function() {
+      $( "#start" ).datepicker({																
+          showOtherMonths: true,
+          selectOtherMonths: true
+      });
+    });																								
+  </script>																						<!-- datepicker -->
+  <script>																						
+    $(function() {
+      $( "#end" ).datepicker({																
+        showOtherMonths: true,
+        selectOtherMonths: true
+      });
+    });
+  </script>       
+  <style type="text/css">
+    body {
+      background: url(images/linedpaper.png);
+    }
+    
+    .btns .bb{
+      padding:20px;
+      /*border:1px solid #CCC;*/
+      display:inline-block;
+      margin:10px 0;
+    }
+    
+    h1{
+      line-height:160px;
+      font-family:"Comic Sans MS";
+    }
+    .instruction{
+      font-style: italic;
+      color:#999;
+    }
+  
+    #map_canvas {
+      width:100%;
+      height: 450px !important;
+      box-shadow: 0 0 20px #CCC;
+    }
+
+  </style>	    																				<!-- datepicker -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgMp1DDsoCY8FO5ulWQhlCxbUfpXu21sc&sensor=false"></script>
+  <script>
+    var posts = {};
+    var poly;
+    var map;
+
+    var data = [];
+    function initialize() {
+      //var chicago = new google.maps.LatLng(41.879535, -87.624333);
+      var mapOptions = {
+        center: new google.maps.LatLng(25.016427,121.545927),
+        zoom: 6,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+
+      map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+
+      var polyOptions = {
+        strokeColor: '#000000',
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+      }
+      poly = new google.maps.Polyline(polyOptions);
+      poly.setMap(map);
+
+      // Add a listener for the click event
+      google.maps.event.addListener(map, 'click', addLatLng);
+      var posts = JSON.parse(window.localStorage["posts"]); 
+      var temp = JSON.parse(window.localStorage["data"]);
+      for(var i in posts){
+        //var newpos = new google.maps.LatLng(temp[i].latLng.Ya,temp[i].latLng.Za);
+        addLatLng2(posts[i]);
+       /* //console.log(temp[i].latLng);
+        poly.getPath().push(newpos);
+       var marker = new google.maps.Marker({
+        position: newpos,
+        title: '#HELLO',
+        map: map
+      });*/
+     }
+      data=temp;
+       window.localStorage['posts']=JSON.stringify(posts);
+    }
+
+    /**s
+     * Handles click events on a map, and adds a new point to the Polyline.
+     * @param {MouseEvent} mouseEvent
+     */
+
+    function addLatLng(event) {
+
+      var path = poly.getPath();
+
+      // Because path is an MVCArray, we can simply append a new coordinate
+      // and it will automatically appear
+      path.push(event.latLng);
+      // Add a new marker at the new plotted point on the polyline.
+      console.log(event.latLng);
+      data.push(event);
+      var marker = new google.maps.Marker({
+        position: event.latLng,
+        title: '#' + path.getLength(),
+        zIndex:path.getLength(),
+        map: map
+      });
+      var index = path.getLength();
+      if(!posts[index]){
+       posts[index] = {title:marker.title,index:index,content:"",latLng: event.latLng};
+       console.log("new marker" + posts[index].title + JSON.stringify(posts));
+       }
+       google.maps.event.addListener(marker,"click",function(){
+          currentEdit = marker.zIndex;
+          $('#title').val(posts[currentEdit].title);
+          $('#content').val(posts[currentEdit].content);
+          $('#start').val(posts[currentEdit].start);
+          $('#end').val(posts[currentEdit].end);
+          $('html, body').animate({
+		    scrollTop: $("#title").offset().top-100
+		 }, 500);
+       });
+
+       window.localStorage["data"]=JSON.stringify(data);
+       window.localStorage['posts']=JSON.stringify(posts);
+
+    }
+    function addLatLng2(post) {
+
+      var path = poly.getPath();
+
+      // Because path is an MVCArray, we can simply append a new coordinate
+      // and it will automatically appear
+      var pos = new google.maps.LatLng(post.latLng.Ya,post.latLng.Za);
+      path.push(pos);
+      data.push({latLng:post.latLng});
+      var marker = new google.maps.Marker({
+        position: pos,
+        title: post.title,
+        zIndex:path.getLength(),
+        map: map
+      });
+      var index = path.getLength();
+      if(!posts[index]){
+       posts[index] = {title:post.title,index:index,content:post.content,latLng: pos};
+       console.log("new marker" + posts[index].title + JSON.stringify(posts));
+       }
+       google.maps.event.addListener(marker,"click",function(){
+          currentEdit = marker.zIndex;
+          $('#title').val(posts[currentEdit].title);
+          $('#content').val(posts[currentEdit].content);
+          $('#start').val(posts[currentEdit].start);
+          $('#end').val(posts[currentEdit].end);
+          $('html, body').animate({
+		    scrollTop: $("#title").offset().top-100
+		 }, 500);
+       });
+
+       window.localStorage["data"]=JSON.stringify(data);
+      // window.localStorage['posts']=JSON.stringify(posts);
+
+    }
+    var currentEdit;
+    function saveTemp(){
+    	    posts[currentEdit].title=$('#title').val();
+          posts[currentEdit].content=$('#content').val();
+		posts[currentEdit].start = $('#start').val();
+		posts[currentEdit].end = $('#end').val();
+          window.localStorage['posts']=JSON.stringify(posts);
+    }
+    function post(){
+    	location.href="trip";
+    }
+  </script>
+ 
+
+</head>
+<body onload="initialize()">
+  <div id="fb-root"></div>
+    <script>
+      // Additional JS functions here
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '476484179056960', // App ID
+          channelUrl : '//140.112.249.226/channel.html', // Channel File
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
+        });
+
+        // Additional init code here
+
+        FB.getLoginStatus(function(response) {
+          if (response.status === 'connected') {
+            login();
+          // connected
+          } 
+          else if (response.status === 'not_authorized') {
+          // not_authorized
+          } 
+          else {
+          // not_logged_in
+          }
+        });
+        
+        var FacebookLoginWindow;
+        var loginWindowTimer;      
+
+         
+        function login(){
+          FB.api('/me', function(response) {
+            var head = "<img src = https://graph.facebook.com/" + response.id + "/picture?type=normal>";
+            $('div .name').html(response.name);
+            $('div .img').html(head);       
+          });
+          $('.nav .login').remove(); 
+          $('.nav').append('<li><a href="123" class="logout">Logout</a></li>'); 
+          $('.logout').click(function(e){
+            e.preventDefault();
+            FB.logout(function(res){
+              window.location=window.location;
+            });
+            $('.nav .logout').remove(); 
+            $('.nav').append('<li><a href="" class="login">Login</a></li>'); 
+          }); 
+        };
+
+        $(".login").click(function(e){
+          e.preventDefault();
+          window.location=window.location;
+          var popupWidth=500;
+          var popupHeight=300;
+          var xPosition=($(window).width()-popupWidth)/2;
+          var yPosition=($(window).height()-popupHeight)/2;
+          var loginUrl="http://www.Facebook.com/dialog/oauth/?"+
+              "scope=email,publish_stream&"+
+              "client_id=476484179056960&"+
+              "redirect_uri=http://tripjournall.herokuapp.com/loginHandler.html&"+
+              "response_type=token&"+
+              "display=popup";
+          FacebookLoginWindow=window.open(loginUrl, "LoginWindow",
+              "location=1,scrollbars=1,"+
+              "width="+popupWidth+",height="+popupHeight+","+
+              "left="+xPosition+",top="+yPosition);
+          
+          loginWindowTimer=setInterval(onTimerCallbackToCheckLoginWindowClosure, 1000);
+        });    
+        
+        function onTimerCallbackToCheckLoginWindowClosure(){
+          if (FacebookLoginWindow.closed){
+              clearInterval(loginWindowTimer);
+          }
+        }
+      };
+
+
+      // Load the SDK Asynchronously
+      (function(d){
+         var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement('script'); js.id = id; js.async = true;
+         js.src = "//connect.facebook.net/en_US/all.js";
+         ref.parentNode.insertBefore(js, ref);
+       }(document));
+    </script>
+    <div class="navbar navbar-fixed-buttom">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">TripJournal</a>
+          <div class="nav-collapse collapse pull-right">
+            <div class="name"></div>
+            <div class="img"></div>
+            <ul class="nav">
+              <li><a href="/create">Start</a></li>
+              <li><a href="#profile">Profile</a></li>
+              <li><a href="" class="login">Login</a></li>
+            </ul>
+          </div><!--/.nav-collapse --> 
+        </div>
+      </div>
+    </div>
+	<div class="container">
+
+      <span class="btns pull-left">
+        <a class="bb" href="javascript:void(0)" class="btn"><img src="images/hammer.png" alt="" style="width:120px"></a>
+        <a class="bb" href="javascript:void(0)" style="padding-left:0; margin-left:-25px" class="btn"><img src="images/pin.png" alt="" style="width:60px;margin-top:60px;"></a>
+      </span>
+      <h1 class="pull-right">Creat My Trip</h1>
+      <div style="clear:both"></div>
+      <div class="pull-right" style="margin-top:-40px; font-size:1.3em">touch the map, put on the pin and it will line up your trip </div>
+      <div class="row">
+       <div id="map_canvas"> </div> 
+      </div>
+    </div>
+
+	<div class="wrapper">
+		<form method='post' action='/upload' ENCTYPE="multipart/form-data" class="uploadphoto">
+			<input type='file' name='file' />
+			<button class="btn btn-primary btnAddPhoto" >新增相片</button>	
+		</form>
+	  	<button class="btnCreateTrip btn btn-success" type="button" onclick="post()">建立文章</button>
+	  	<div class="blogArea">
+	  		
+	  		<label class="titleLabel" for="">Title</label>
+	  		<input id="title" onchange="saveTemp()" type="text" class="titleArea" placeholder="Please enter your title">
+	  		<div class="content">
+		  		<label class="contentLabel" for="">Content</label>
+		  		<textarea onchange="saveTemp()" onkeydown="saveTemp()" id="content" rows="20" class="contentArea field span6"></textarea>
+	  		</div>
+	  		<div class="date">起始日期: <input id="start" class="startDate" type="text" onchange="saveTemp()"/></div>
+	  		<div class="date">結束日期: <input id="end" class="endDate" type="text" onchange="saveTemp()" /></div>
+	  	</div>
+	  	
+	  	<div class="photoArea">
+<!-- 			<ul class="thumbnails">
+			  <li class="span1">
+			    <a href="#" class="thumbnail">
+			      	<img data-src="holder.js/260x120" src="img/image-2.jpg" width ="100" height="100" alt="">
+			    </a>
+			  </li>			  
+			  <li class="span1">
+			    <a href="#" class="thumbnail">
+			      	<img data-src="holder.js/260x120" src="img/image-2.jpg" width ="100" height="100" alt="">
+			    </a>
+			  </li>
+
+			  <li class="span1">
+			    <a href="#" class="thumbnail">
+			      	<img data-src="holder.js/260x120" src="img/image-2.jpg" width ="100" height="100" alt="">
+			    </a>
+			  </li>
+			
+			</ul>	 -->	  		
+			<ul class="thumbnails">
+        
+        <% for(var k in database) { %>        
+          <li class="span1">
+            <a href="#" class="thumbnail">
+              <img src='/uploads/<%= k.substring(k.lastIndexOf('/')+1) %>' width="100" height="100">      
+            </a>
+          </li>
+        <% } %>
+          
+      </ul>
+	  	</div>
+	</div>
+
+
+</body>
+</html>

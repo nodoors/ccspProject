@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TripJournal</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+    <link rel='stylesheet' href='/stylesheets/bootstrap-responsive.min.css' />
+    <link rel='stylesheet' href='/stylesheets/index.css' />
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <script>
+      // Additional JS functions here
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '476484179056960', // App ID
+          channelUrl : '//140.112.249.226/channel.html', // Channel File
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
+        });
+
+        // Additional init code here
+
+        FB.getLoginStatus(function(response) {
+          if (response.status === 'connected') {
+            login();
+          // connected
+          } 
+          else if (response.status === 'not_authorized') {
+          // not_authorized
+          } 
+          else {
+          // not_logged_in
+          }
+        });
+        
+        var FacebookLoginWindow;
+        var loginWindowTimer;      
+
+         
+        function login(){
+          FB.api('/me', function(response) {
+            var head = "<img src = https://graph.facebook.com/" + response.id + "/picture?type=normal>";
+            $('div .name').html(response.name);
+            $('div .img').html(head);       
+          });
+          $('.nav .login').remove(); 
+          $('.nav').append('<li><a href="123" class="logout">Logout</a></li>'); 
+          $('.logout').click(function(e){
+            e.preventDefault();
+            FB.logout(function(res){
+              window.location=window.location;
+            });
+            $('.nav .logout').remove(); 
+            $('.nav').append('<li><a href="" class="login">Login</a></li>'); 
+          }); 
+        };
+
+        $(".login").click(function(e){
+          e.preventDefault();
+          window.location=window.location;
+          var popupWidth=500;
+          var popupHeight=300;
+          var xPosition=($(window).width()-popupWidth)/2;
+          var yPosition=($(window).height()-popupHeight)/2;
+          var loginUrl="http://www.Facebook.com/dialog/oauth/?"+
+              "scope=email,publish_stream&"+
+              "client_id=476484179056960&"+
+              "redirect_uri=http://tripjournall.herokuapp.com/loginHandler.html&"+
+              "response_type=token&"+
+              "display=popup";
+          FacebookLoginWindow=window.open(loginUrl, "LoginWindow",
+              "location=1,scrollbars=1,"+
+              "width="+popupWidth+",height="+popupHeight+","+
+              "left="+xPosition+",top="+yPosition);
+          
+          loginWindowTimer=setInterval(onTimerCallbackToCheckLoginWindowClosure, 1000);
+        });    
+        
+        function onTimerCallbackToCheckLoginWindowClosure(){
+          if (FacebookLoginWindow.closed){
+              clearInterval(loginWindowTimer);
+          }
+        }
+      };
+
+
+      // Load the SDK Asynchronously
+      (function(d){
+         var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement('script'); js.id = id; js.async = true;
+         js.src = "//connect.facebook.net/en_US/all.js";
+         ref.parentNode.insertBefore(js, ref);
+       }(document));
+    </script>
+
+    <div class="navbar navbar-fixed-buttom">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">TripJournal</a>
+          <div class="nav-collapse collapse pull-right">
+            <div class="name"></div>
+            <div class="img"></div>
+            <ul class="nav">
+              <li><a href="/create">Start</a></li>
+              <li><a href="#profile">Profile</a></li>
+              <li><a href="" class="login">Login</a></li>
+            </ul>
+          </div><!--/.nav-collapse --> 
+        </div>
+      </div>
+    </div>
+    <div class = "map">
+      <img src="images/map.jpg" alt="" class = "img-rounded">      
+    </div>  
+    <div class = "bot">             
+      <span><h1>Featured</h1></span>
+      <div class = "search">
+        <input type = "text" class="input-medium search-query"> <button class = "btn"><i class="icon-search"></i></button>
+      </div>  
+      <div class="feature">
+        <!-- Three columns of text below the carousel -->
+        <div class="row">
+          <div class="span3">
+            <img class="img-rounded" src="http://placehold.it/200x200">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+          </div><!-- /.span4 -->
+          <div class="span3">
+            <img class="img-rounded" src="http://placehold.it/200x200">
+            <h2>Heading</h2>
+            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+          </div><!-- /.span4 -->
+          <div class="span3">
+            <img class="img-rounded" src="http://placehold.it/200x200">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+          </div><!-- /.span4 -->
+        </div><!-- /.row -->
+      </div>
+    </div>
+    <script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+  </body>
+</html>

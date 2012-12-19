@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html> 
+	<head>
+		<title>TripJournal</title>
+		<meta charset="utf-8"/>
+		<link rel="stylesheet" href="stylesheets/bootstrap.min.css" />
+		<style type="text/css">
+			.box{
+				border: 1px solid #CCC;
+			}
+			body{
+				padding-top:60px;
+				background: url(images/linedpaper.png);
+
+			}
+			.about-me{
+				margin-left:18px;
+				padding:10px;
+			}
+			.about-me .image{
+				text-align:center;
+			}
+			.map-ctrl{
+				padding:0;
+				margin-left:0;
+			}
+			.btns .bb{
+				padding:20px;
+				border:1px solid #CCC;
+				display:inline-block;
+				margin:10px 0;
+			}
+			.btns .bb:hover{
+				background:#EEE;
+			}
+			.rel-trips{
+				overflow:hidden;
+			}
+			.rel-trip{
+				padding:10px;
+				margin:10px;
+				margin-right:0;
+				display:inline-block;
+			}
+			.rel-trip img{
+				display:block;
+			}
+			.rel-trip .title{
+				line-height:1.5em;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="fb-root"></div>
+    <script>
+      // Additional JS functions here
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '476484179056960', // App ID
+          channelUrl : '//140.112.249.226/channel.html', // Channel File
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
+        });
+
+        // Additional init code here
+
+        FB.getLoginStatus(function(response) {
+          if (response.status === 'connected') {
+            login();
+          // connected
+          } 
+          else if (response.status === 'not_authorized') {
+          // not_authorized
+          } 
+          else {
+          // not_logged_in
+          }
+        });
+        
+        var FacebookLoginWindow;
+        var loginWindowTimer;      
+
+         
+        function login(){
+          FB.api('/me', function(response) {
+            var head = "<img src = https://graph.facebook.com/" + response.id + "/picture?type=normal>";
+            $('div .name').html(response.name);
+            $('div .img').html(head);       
+          });
+          $('.nav .login').remove(); 
+          $('.nav').append('<li><a href="123" class="logout">Logout</a></li>'); 
+          $('.logout').click(function(e){
+            e.preventDefault();
+            FB.logout(function(res){
+              window.location=window.location;
+            });
+            $('.nav .logout').remove(); 
+            $('.nav').append('<li><a href="" class="login">Login</a></li>'); 
+          }); 
+        };
+
+        $(".login").click(function(e){
+          e.preventDefault();
+          window.location=window.location;
+          var popupWidth=500;
+          var popupHeight=300;
+          var xPosition=($(window).width()-popupWidth)/2;
+          var yPosition=($(window).height()-popupHeight)/2;
+          var loginUrl="http://www.Facebook.com/dialog/oauth/?"+
+              "scope=email,publish_stream&"+
+              "client_id=476484179056960&"+
+              "redirect_uri=http://tripjournall.herokuapp.com/loginHandler.html&"+
+              "response_type=token&"+
+              "display=popup";
+          FacebookLoginWindow=window.open(loginUrl, "LoginWindow",
+              "location=1,scrollbars=1,"+
+              "width="+popupWidth+",height="+popupHeight+","+
+              "left="+xPosition+",top="+yPosition);
+          
+          loginWindowTimer=setInterval(onTimerCallbackToCheckLoginWindowClosure, 1000);
+        });    
+        
+        function onTimerCallbackToCheckLoginWindowClosure(){
+          if (FacebookLoginWindow.closed){
+              clearInterval(loginWindowTimer);
+          }
+        }
+      };
+
+
+      // Load the SDK Asynchronously
+      (function(d){
+         var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement('script'); js.id = id; js.async = true;
+         js.src = "//connect.facebook.net/en_US/all.js";
+         ref.parentNode.insertBefore(js, ref);
+       }(document));
+    </script>
+    <div class="navbar navbar-fixed-buttom">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">TripJournal</a>
+          <div class="nav-collapse collapse pull-right">
+            <div class="name"></div>
+            <div class="img"></div>
+            <ul class="nav">
+              <li><a href="/create">Start</a></li>
+              <li><a href="#profile">Profile</a></li>
+              <li><a href="" class="login">Login</a></li>
+            </ul>
+          </div><!--/.nav-collapse --> 
+        </div>
+      </div>
+    </div>
+		<div class="container">
+			<div class="row">
+				<h1>My trip</h1>
+			</div>
+			<div class="row">
+				<div class="span9 map-ctrl">
+					<div class="btns">
+						<a class="bb" href="javascript:void(0)" class="btn"><img src="images/playbtn.png" alt="" style="width:60px"></a>
+					</div>
+					<div id="map" class="map box" style="width:700px;height:700px;">
+					</div>
+				</div>
+				<div class="span3 about-me box">
+					<img src="http://placehold.it/210x210" alt="" class="images-polaroid" />
+					<br />
+					<div id="info">
+						<h3>About me</h3>
+						<h3>Lives in</h3>
+						<h3>Interests</h3>
+					</div>
+				</div>
+			</div>				
+			<br />
+			<div class="row">
+				<h2>Related Trips</h2>
+			</div>
+			<div class="row box rel-trips list_carousel">			
+					<ul id="trip-container">
+					
+					</ul>
+			</div>
+		</div>
+		<div style="clear:both"></div>
+		<div style="height:180px" />
+	</body>
+	<script type="text/javascript" src="javascripts/jquery.min.js"></script>
+	<script type="text/javascript" src="javascripts/jquery.carouFredSel-6.1.0.js"></script>
+	<script type="text/javascript">
+
+		$().ready(function(){
+			loadMap();
+			var infotop = $('#info').position().top-$('.about-me').position().top;
+			var mapbtm = $('.map-ctrl').position().top+$('.map-ctrl').height();
+			$('#info').height(mapbtm-infotop-322);
+			for(var i = 0 ; i < 10 ; i++){
+			$('#trip-container').append(
+				'<li class="rel-trip box"><images src="http://placehold.it/150x150" alt="" /> <span class="title">TaipeiTrip</span> </li>');
+			}
+			$('#trip-container').carouFredSel({
+				height:220,
+				scroll:{
+					duration   : 1000
+				},
+				auto:{
+					timeoutDuration: 10000
+				}
+			});
+		});
+	</script>
+	<script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgMp1DDsoCY8FO5ulWQhlCxbUfpXu21sc&sensor=false">
+    </script>
+     <script type="text/javascript">
+     //<![CDATA[
+     var posts;
+     var data;
+     var poly;
+     var currentEdit;
+      function loadMap() {
+        var mapOptions = {
+          center: new google.maps.LatLng(25.016427,121.545927),
+          zoom: 7,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        var map = new google.maps.Map(document.getElementById("map"),
+            mapOptions);
+
+         var polyOptions = {
+          strokeColor: '#000000',
+          strokeOpacity: 1.0,
+          strokeWeight: 3
+        }
+        poly = new google.maps.Polyline(polyOptions);
+        poly.setMap(map);
+        var path = poly.getPath();
+       	posts = JSON.parse(localStorage["posts"]);
+       	data = JSON.parse(localStorage["data"]);
+       	for(var i in posts){
+       		var post = posts[i];
+       		var pos = new google.maps.LatLng(post.latLng.Ya,post.latLng.Za);
+       		path.push(pos);
+       		console.log(post);
+       		var marker = new google.maps.Marker({
+       		title: post.title,
+			position: pos,
+			zIndex: post.index,
+			map: map
+		  	});
+		  	 google.maps.event.addListener(marker,"click",onMarkerClick);
+
+       	}
+		/*var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(25.016427,121.545927),
+			map: map
+		  });*/
+      }
+      //按下針針後觸發
+      function onMarkerClick(){
+      	currentEdit = this.zIndex;
+	    //
+	    alert(posts[currentEdit].title);
+	    alert(posts[currentEdit].content);
+	    alert(posts[currentEdit].start);
+	    //這是開始的時間
+	    alert(posts[currentEdit].end);
+	    //這是結束的時間
+      }
+     //]]>
+     </script>
+</html>
