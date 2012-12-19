@@ -16,6 +16,7 @@
   <script type="text/javascript" src="javascripts/jquery.json-2.4.min.js"></script>
   <script type="text/javascript" src="javascripts/jquery-ui.js"></script>           
   <script type="text/javascript" src="javascripts/bootstrap.js"></script>
+  <script type="text/javascript" src="javascripts/ajaxupload.js"></script>
   
   <script>																						
     $(function() {
@@ -52,6 +53,13 @@
     .instruction{
       font-style: italic;
       color:#999;
+    }
+    .thumbnails{
+      padding-left: 30px;
+    }
+    .thumbnails li{
+      margin: 5px;
+
     }
   
     #map_canvas {
@@ -128,7 +136,7 @@
       });
       var index = path.getLength();
       if(!posts[index]){
-       posts[index] = {title:marker.title,index:index,content:"",latLng: event.latLng};
+       posts[index] = {title:marker.title,index:index,content:"",latLng: event.latLng,imgs:[]};
        console.log("new marker" + posts[index].title + JSON.stringify(posts));
        }
        google.maps.event.addListener(marker,"click",function(){
@@ -163,7 +171,7 @@
       });
       var index = path.getLength();
       if(!posts[index]){
-       posts[index] = {title:post.title,index:index,content:post.content,latLng: pos};
+       posts[index] = {title:post.title,index:index,content:post.content,latLng: pos,imgs:post.imgs};
        console.log("new marker" + posts[index].title + JSON.stringify(posts));
        }
        google.maps.event.addListener(marker,"click",function(){
@@ -172,6 +180,11 @@
           $('#content').val(posts[currentEdit].content);
           $('#start').val(posts[currentEdit].start);
           $('#end').val(posts[currentEdit].end);
+          $('.thumbnails').empty();
+          for(var i in posts[currentEdit].imgs){
+            var img_path = posts[currentEdit].imgs[i];
+            showImg(img_path);
+          }
           $('html, body').animate({
 		    scrollTop: $("#title").offset().top-100
 		 }, 500);
@@ -185,8 +198,8 @@
     function saveTemp(){
     	    posts[currentEdit].title=$('#title').val();
           posts[currentEdit].content=$('#content').val();
-		posts[currentEdit].start = $('#start').val();
-		posts[currentEdit].end = $('#end').val();
+	       	posts[currentEdit].start = $('#start').val();
+	       	posts[currentEdit].end = $('#end').val();
           window.localStorage['posts']=JSON.stringify(posts);
     }
     function post(){
@@ -322,7 +335,7 @@
 	<div class="wrapper">
 		<form method='post' action='/upload' ENCTYPE="multipart/form-data" class="uploadphoto">
 			<input type='file' name='file' />
-			<button class="btn btn-primary btnAddPhoto" >新增相片</button>	
+			<div id="upload_img" class="btn btn-primary btnAddPhoto" >新增相片</div>	
 		</form>
 	  	<button class="btnCreateTrip btn btn-success" type="button" onclick="post()">建立文章</button>
 	  	<div class="blogArea">
@@ -359,18 +372,65 @@
 			</ul>	 -->	  		
 			<ul class="thumbnails">
         
-        <% for(var k in database) { %>        
+       <!-- <% for(var k in database) { %>        
           <li class="span1">
             <a href="#" class="thumbnail">
               <img src='/uploads/<%= k.substring(k.lastIndexOf('/')+1) %>' width="100" height="100">      
             </a>
           </li>
-        <% } %>
+        <% } %> -->
           
       </ul>
 	  	</div>
 	</div>
+  <script type="text/javascript">
+  $().ready(function(){
+    console.log($('#upload_img'));
+    new AjaxUpload('upload_img', {
+      // Location of the server-side upload script
+      // NOTE: You are not allowed to upload files to another domain
+      action: '/upload',
+      // File upload name
+      name: 'file',
+      // Submit file after selection
+      autoSubmit: true,
+      // The type of data that you're expecting back from the server.
+      // HTML (text) and XML are detected automatically.
+      // Useful when you are using JSON data as a response, set to "json" in that case.
+      // Also set server response type to text/html, otherwise it will not work in IE6
+      responseType: false,
+      // Fired after the file is selected
+      // Useful when autoSubmit is disabled
+      // You can return false to cancel upload
+      // @param file basename of uploaded file
+      // @param extension of that file
+      onChange: function(file, extension){},
+      // Fired before the file is uploaded
+      // You can return false to cancel upload
+      // @param file basename of uploaded file
+      // @param extension of that file
+      onSubmit: function(file, extension) {},
+      // Fired when file upload is completed
+      // WARNING! DO NOT USE "FALSE" STRING AS A RESPONSE!
+      // @param file basename of uploaded file
+      // @param response server response
+      onComplete: function(file, response) {
+          var resp = eval(response);
+          console.log(resp);
+          if(!posts[currentEdit].imgs) posts[currentEdit].imgs = [];
+          posts[currentEdit].imgs.push(resp);
+          var imga = $('<li class="span1"><a href="#" class="thumbnail"><img src="uploads/'+resp+'" /></a></li>').hide();
+          $('.thumbnails').append(imga);
+          imga.fadeIn();
+          window.localStorage['posts']=JSON.stringify(posts);
+        }
+    }); });
+    function showImg(resp){
+      var imga = $('<li class="span1"><a href="#" class="thumbnail"><img src="uploads/'+resp+'" /></a></li>').hide();
+          $('.thumbnails').append(imga);
+          imga.fadeIn();
 
-
+    }
+  </script>
 </body>
 </html>

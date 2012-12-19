@@ -1,0 +1,117 @@
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title></title> 
+  <link href="css/play.css"  rel="stylesheet" type="text/css" />
+  <link href="css/bootstrap.css" rel="stylesheet">                        <!-- bootstrap -->
+  <script type="text/javascript" src="js/jquery.js"></script>                   <!-- bootstrap -->
+  <script type="text/javascript" src="js/bootstrap.js"></script>                  <!-- bootstrap -->
+  <script type="text/javascript" src="js/jquery.mousewheel-3.0.6.pack.js"></script>         <!-- fancy box -->
+  <link rel="stylesheet" href="css/jquery.fancybox.css?v=2.1.3" type="text/css" media="screen" /> <!-- fancy box -->  
+  <script type="text/javascript" src="js/jquery.fancybox.pack.js?v=2.1.3"></script>       <!-- fancy box -->
+  <script type="text/javascript" src="js/jquery.carouFredSel-6.1.0-packed.js"></script>                     <!-- carouFredSel box -->
+  <script type="text/javascript" src="js/jquery.carouFredSel-6.1.0.js"></script>          <!-- carouFredSel box -->
+  <style type="text/css">
+    h1{
+      margin-left: 20px;
+    }
+    p{
+      padding:10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper" >
+    <!-- article area  -->
+    <div class="articleArea">
+        <div id="myCarousel" class="carousel slide">
+        <!-- Carousel items -->
+        <h1><%=param.title%></h1>
+        <hr>
+        <p><%=param.content%></p>
+        <div class="carousel-inner">
+          <% for(var i in param.imgs){ %>
+            <div class="item"><img src="uploads/<%=param.imgs[i]%>" alt=""></div>
+          <% }; %>
+        </div>
+        <script type="text/javascript">
+          $($('.item')[0]).addClass("active");
+        </script>
+        <!-- Carousel nav -->
+        <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+        <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+      </div>
+    </div>
+    
+    <!-- comment area -->
+    <div class="commentArea">
+      
+      <form action="" class="form-horizontal">      
+        <div class="control-group nickName">  
+          <label for="nickNameArea" class="control-label">Nickname</label>
+          
+          <div class="controls">
+            <input type="text" id ="nickNameArea" placeholder="Enter your Nickname">
+          </div>
+        </div>        
+      </form>
+      
+      <form action="">
+        <div class="comments">
+          <label for="">Comments</label>
+          <textarea rows="3" class="field span4"></textarea>
+        </div>
+        <button class="btn btn-primary addComment" type="button">Add Comments</button>
+      </form>
+
+      <hr>
+
+      <div class="userComment">
+      <!--  <div class="individualComment"><img src="img/avatar.jpg" alt="avatar" class="img-rounded">hi</div>
+        <div class="individualComment"><img src="img/avatar.jpg" alt="avatar" class="img-rounded">hello</div> -->
+
+        <div class="media">
+            <a class="pull-left" href="#">
+              <img class="media-object" data-src="holder.js/64x64" src="img/avatar.jpg" alt="avatar">
+            </a>
+            <div class="media-body">
+              <h4 class="media-heading">Neil</h4>
+              gg
+            </div>
+
+        </div>  
+        
+        <div class="media">
+            <a class="pull-left" href="#">
+              <img class="media-object" data-src="holder.js/64x64" src="img/avatar.jpg" alt="avatar">
+            </a>
+            <div class="media-body">
+              <h4 class="media-heading">george</h4>
+              QQ
+            </div>
+            
+        </div>          
+
+      </div>
+    </div>
+    
+  </div>
+
+
+
+  <!-- scripts -->
+  <script type="text/javascript" src="js/play.js"></script>
+
+  <script type="text/javascript">
+    $('.addComment').click(function(){
+      $('.userComment').append('<div class="media"><a class="pull-left" href="#"><img class="media-object" data-src="holder.js/64x64" src="img/avatar.jpg" alt="avatar"></a><div class="media-body"></div></div>');
+
+
+    });
+  </script>
+
+  
+</body>
+</html>

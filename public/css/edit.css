@@ -1,0 +1,41 @@
+.wrapper{
+	border: 1px solid #DDDDDD;
+	border-radius: 10px;
+	height: 800px;
+	width: 1000px;
+	margin: 30px auto 30px auto; 
+
+}
+
+
+.form-search{
+	position: absolute;
+	margin-left: 100px;
+	margin-top: 300px;
+
+	
+}
+
+img[alt=Hammer]{
+	width: 200px;
+	height: 200px;
+	position: absolute;
+	margin-top: 50px;
+	margin-left: 100px
+}
+
+.btnCreate{
+	position: absolute;
+	margin-top: 50px;
+	margin-left: 700px;	
+}
+
+.mapArea{
+	position: absolute;
+	border: 1px solid #DDDDDD;
+	border-radius: 10px;
+	height: 500px;
+	width: 500px;
+	margin-top: 150px;
+	margin-left: 350px;
+}

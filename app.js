@@ -45,13 +45,25 @@ app.get('/create', function(req, res, next){
 app.get('/trip',  function(req, res, next){
   res.render('trip')
 });
+app.post('/tripBrowse',function(req, res, next) {
+  req.body.imgs = JSON.parse(req.body.imgs);
+  res.render('play', {
+    title : 'Play'
+    , param: req.body
+  });
+
+
+});
 app.post('/upload', function(req, res, next) {
     //if(!req.body.title) throw new Error('no title');
+    //header ( 'Content-Type: text/html' ) ;
     database[req.files.file.path.replace(prefix, '')] = {
         title : req.body.title
     };
     console.log(database);
-    res.redirect('/create');
+    //res.redirect('/create');
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('{path:"'+req.files.file.path.replace(prefix, '')+'"}')
 });
 
 http.createServer(app).listen(app.get('port'), function(){

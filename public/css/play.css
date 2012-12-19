@@ -1,0 +1,69 @@
+.wrapper{
+/*	border: 1px solid #DDDDDD;
+	border-radius: 10px;*/
+	height: 1000px;
+	width: 1150px;
+	margin: 0px auto 0px auto; 
+}
+.articleArea{
+	position: absolute;
+	border: 1px solid #DDDDDD;
+	border-radius: 10px;
+	height: 550px;
+	width: 650px;
+	margin-left: 40px;
+	margin-top: 30px;
+
+}
+
+.photoArea{
+	position: absolute;
+	border: 1px solid #DDDDDD;
+	border-radius: 10px;
+	margin-left: 40px;
+	margin-top: 600px;
+	width: 650px;
+	height: 150px;	
+}
+
+.commentArea{
+	position: absolute;
+	border: 1px solid #DDDDDD;
+	border-radius: 10px;
+	height: 720px;
+	width: 400px;
+	margin-left: 700px;
+	margin-top: 30px;
+
+}
+
+.nickName{
+	margin-left: -65px;
+	margin-top: 10px;
+}
+
+.comments{
+	margin-left: 35px;
+}
+textarea{
+	width: 90px;
+}
+
+.addComment{
+	margin-left: 35px;
+}
+
+img[alt=avatar]{
+	width: 50px;
+	height: 50px;
+}
+
+.userComment{
+	margin-left: 35px;
+}
+
+.individualComment{
+	margin-top: 5px;
+}
+
+
